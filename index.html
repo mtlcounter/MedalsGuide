@@ -270,6 +270,19 @@
             height: auto; /* Maintains aspect ratio */
             width: 100%; /* Makes it responsive, but won't exceed max-width */
         }
+
+        .guide-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .guide-section h3 {
+            margin-bottom: auto; /* Or a fixed value like 1.5rem */
+        }
+
+        .diagram {
+            margin-top: auto; /* This pushes the diagrams to align at the bottom */
+        }
         
         @media (max-width: 768px) {
             .container {
