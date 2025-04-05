@@ -509,30 +509,73 @@
         // Set current year in footer
         document.getElementById('current-year').textContent = new Date().getFullYear();
         
-        // Detect user's region based on browser settings
+        // Enhanced region detection using IP geolocation
         function detectUserRegion() {
-            const userLanguage = navigator.language || navigator.userLanguage || "en-us";
-            
-            // Set dropdown to match detected language/region
-            const languageSelect = document.getElementById('language');
-            
-            if (userLanguage.includes('au')) {
-                languageSelect.value = 'en-au';
-            } else if (userLanguage.includes('gb') || userLanguage.includes('uk')) {
-                languageSelect.value = 'en-gb';
-            } else {
-                languageSelect.value = 'en-us'; // Default to US if not AU or UK
-            }
-            
-            // Update content based on detected region
-            changeLanguage();
-            
-            // Track detected region with Mixpanel
-            mixpanel.track("Region Detected", {
-                "detected_region": languageSelect.value,
-                "browser_language": userLanguage
-            });
+            // First try IP-based geolocation
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    const languageSelect = document.getElementById('language');
+                    let detectedRegion = 'en-us'; // Default
+                    
+                    // Map country code to our supported regions
+                    if (data.country === 'AU' || data.country === 'NZ') {
+                        detectedRegion = 'en-au';
+                    } else if (data.country === 'GB' || data.country === 'UK' || 
+                              data.continent_code === 'EU') {
+                        detectedRegion = 'en-gb';
+                    } else {
+                        detectedRegion = 'en-us';
+                    }
+                    
+                    // Set dropdown to match detected region
+                    languageSelect.value = detectedRegion;
+                    
+                    // Update content based on detected region
+                    changeLanguage();
+                    
+                    // Track detected region with Mixpanel
+                    mixpanel.track("Region Detected", {
+                        "detection_method": "IP geolocation",
+                        "detected_region": detectedRegion,
+                        "country_code": data.country,
+                        "browser_language": navigator.language || navigator.userLanguage
+                    });
+                })
+                .catch(error => {
+                    // Fallback to browser language if IP geolocation fails
+                    fallbackToBrowserLanguage();
+                    
+                    // Track the error
+                    mixpanel.track("Geolocation Error", {
+                        "error": error.toString()
+                    });
+                });
         }
+
+// Fallback method using browser language
+function fallbackToBrowserLanguage() {
+    const userLanguage = navigator.language || navigator.userLanguage || "en-us";
+    const languageSelect = document.getElementById('language');
+    
+    if (userLanguage.includes('au')) {
+        languageSelect.value = 'en-au';
+    } else if (userLanguage.includes('gb') || userLanguage.includes('uk')) {
+        languageSelect.value = 'en-gb';
+    } else {
+        languageSelect.value = 'en-us';
+    }
+    
+    // Update content based on detected region
+    changeLanguage();
+    
+    // Track fallback method with Mixpanel
+    mixpanel.track("Region Detection Fallback", {
+        "detection_method": "Browser language",
+        "detected_region": languageSelect.value,
+        "browser_language": userLanguage
+    });
+}
         
 // Language localization function
 function changeLanguage() {
