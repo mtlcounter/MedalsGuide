@@ -731,12 +731,12 @@ function fallbackToBrowserLanguage() {
         
         // Hide all region-specific FAQs first
         document.querySelectorAll('.au-faq, .gb-faq, .us-faq').forEach(el => {
-            el.style.display = 'none';
-        // Hide all region-specific resource links first
-        document.querySelectorAll('.au-links, .gb-links, .us-links').forEach(el => {
-            el.style.display = 'none';
-        });
-        
+    el.style.display = 'none';
+});  // <-- Add this closing bracket
+// Hide all region-specific resource links first
+document.querySelectorAll('.au-links, .gb-links, .us-links').forEach(el => {
+    el.style.display = 'none';
+});        
         // Show common FAQs for all regions
         document.querySelectorAll('.common-faq').forEach(el => {
             el.style.display = 'block';
