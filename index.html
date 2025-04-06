@@ -732,6 +732,9 @@ function fallbackToBrowserLanguage() {
         // Hide all region-specific FAQs first
         document.querySelectorAll('.au-faq, .gb-faq, .us-faq').forEach(el => {
             el.style.display = 'none';
+        // Hide all region-specific resource links first
+        document.querySelectorAll('.au-links, .gb-links, .us-links').forEach(el => {
+            el.style.display = 'none';
         });
         
         // Show common FAQs for all regions
@@ -755,6 +758,11 @@ function fallbackToBrowserLanguage() {
                     el.style.display = 'block';
                 });
                 break;
+
+                // Show Australia-specific useful links
+                document.querySelectorAll('.au-links').forEach(el => {
+                    el.style.display = 'block';
+                });
                 
             case 'en-us':
                 memorialContent = `
@@ -767,6 +775,10 @@ function fallbackToBrowserLanguage() {
                 
                 // Show US-specific FAQs
                 document.querySelectorAll('.us-faq').forEach(el => {
+                    el.style.display = 'block';
+                });
+                // Show US-specific useful links
+                document.querySelectorAll('.us-links').forEach(el => {
                     el.style.display = 'block';
                 });
                 break;
@@ -782,6 +794,10 @@ function fallbackToBrowserLanguage() {
                 
                 // Show UK-specific FAQs
                 document.querySelectorAll('.gb-faq').forEach(el => {
+                    el.style.display = 'block';
+                });
+                // Show UK-specific useful links
+                document.querySelectorAll('.gb-links').forEach(el => {
                     el.style.display = 'block';
                 });
                 break;
