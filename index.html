@@ -732,7 +732,7 @@ function fallbackToBrowserLanguage() {
         // Hide all region-specific FAQs first
         document.querySelectorAll('.au-faq, .gb-faq, .us-faq').forEach(el => {
     el.style.display = 'none';
-});  // <-- Add this closing bracket
+});  
 // Hide all region-specific resource links first
 document.querySelectorAll('.au-links, .gb-links, .us-links').forEach(el => {
     el.style.display = 'none';
@@ -757,12 +757,12 @@ document.querySelectorAll('.au-links, .gb-links, .us-links').forEach(el => {
                 document.querySelectorAll('.au-faq').forEach(el => {
                     el.style.display = 'block';
                 });
-                break;
 
                 // Show Australia-specific useful links
                 document.querySelectorAll('.au-links').forEach(el => {
                     el.style.display = 'block';
                 });
+                break;
                 
             case 'en-us':
                 memorialContent = `
