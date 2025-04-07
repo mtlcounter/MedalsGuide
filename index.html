@@ -192,24 +192,15 @@ function getSecondSundayInNovember(year) {
     return new Date(year, 10, 1 + daysToAdd);
 }
 
-// Function to mark the next upcoming date
-function markNextDate() {
+// Function to highlight the next upcoming date
+function highlightNextDate() {
     // Define our dates in calendar order (static)
-    // Show Anzac Day only for Australian region
-    const currentRegion = document.getElementById('language').value;
-    
-    let dates = [];
-    
-    if (currentRegion === 'en-au') {
-        dates.push({ name: "Anzac Day", date: "April 25" });
-    }
-    
-    // Add the common dates
-    dates = dates.concat([
+    const dates = [
+        { name: "Anzac Day", date: "April 25" },
         { name: "Memorial Day (US)", date: "Last Monday in May" },
         { name: "November 11", date: "November 11" }, // Combined Remembrance/Armistice/Veterans Day
         { name: "Remembrance Sunday (UK)", date: "Second Sunday in November" }
-    ]);
+    ];
     
     // Calculate days until each date
     dates.forEach(item => {
@@ -224,59 +215,49 @@ function markNextDate() {
     // Get all date elements in the sidebar
     const dateElements = document.querySelectorAll('.sidebar p strong');
     
-    // Remove any existing indicators
-    document.querySelectorAll('.next-date-indicator').forEach(el => {
-        el.remove();
+    // Remove any existing highlights
+    document.querySelectorAll('.sidebar p.next-date').forEach(el => {
+        el.classList.remove('next-date');
     });
     
-    // Apply indicator to the next date
+    // Apply highlight to the next date
     dateElements.forEach(el => {
         const dateName = el.textContent.replace(':', '');
         if (dateName === nextDate.name) {
             const parentP = el.closest('p');
             if (parentP) {
-                // Create indicator with tooltip
-                const indicator = document.createElement('span');
-                indicator.className = 'next-date-indicator';
-                indicator.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="8" cy="8" r="7.5" stroke="#555"/>
-                    <text x="8" y="12" text-anchor="middle" font-size="10" fill="#555">i</text>
-                </svg>`;
-                indicator.title = `Coming up in ${nextDate.daysUntil} days`;
+                parentP.classList.add('next-date');
                 
-                // Insert after the date text
-                parentP.appendChild(indicator);
+                // Add countdown text
+                const existingCountdown = parentP.querySelector('.date-countdown');
+                if (existingCountdown) {
+                    existingCountdown.textContent = `(in ${nextDate.daysUntil} days)`;
+                } else {
+                    const countdownSpan = document.createElement('span');
+                    countdownSpan.className = 'date-countdown';
+                    countdownSpan.textContent = ` (in ${nextDate.daysUntil} days)`;
+                    parentP.appendChild(countdownSpan);
+                }
             }
         }
     });
-}
-
-// Add CSS for the indicator
-function addIndicatorStyles() {
+}      
+// Add CSS for highlighting
+function addHighlightStyles() {
     const styleElement = document.createElement('style');
     styleElement.textContent = `
-        .next-date-indicator {
-            display: inline-block;
-            margin-left: 8px;
-            vertical-align: middle;
-            cursor: help;
-            opacity: 0.7;
-            transition: opacity 0.2s;
+        .sidebar p.next-date {
+            background-color: #f5f5f5;
+            border-left: 4px solid #d44;
+            padding: 8px 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-weight: bold;
         }
         
-        .next-date-indicator:hover {
-            opacity: 1;
-        }
-        
-        /* Optional animation to subtly draw attention */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        .next-date-indicator svg {
-            animation: pulse 2s infinite ease-in-out;
+        .date-countdown {
+            color: #d44;
+            font-style: italic;
         }
     `;
     document.head.appendChild(styleElement);
@@ -284,12 +265,12 @@ function addIndicatorStyles() {
 
 // Run on page load
 document.addEventListener('DOMContentLoaded', function() {
-    addIndicatorStyles();
-    markNextDate();
+    addHighlightStyles();
+    highlightNextDate();
     
     // Also run when language changes
-    document.getElementById('language').addEventListener('change', markNextDate);
-});
+    document.getElementById('language').addEventListener('change', highlightNextDate);
+});  
 </script>
     
     <!-- Ads integration -->
