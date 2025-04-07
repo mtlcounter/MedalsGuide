@@ -820,8 +820,8 @@ document.querySelectorAll('.au-links, .gb-links, .us-links').forEach(el => {
             
             // Check if it's close to Anzac Day (April 25th)
             if ((month === 3 && day >= 15) || (month === 4 && day <= 5)) { // April 15 - May 5
-                document.getElementById('language').value = 'en-au';
-                changeLanguage();
+               // document.getElementById('language').value = 'en-au';
+               // changeLanguage();
                 
                 // Track seasonal content display
                 mixpanel.track("Seasonal Content Shown", {
