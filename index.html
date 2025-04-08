@@ -196,10 +196,10 @@ function highlightNextDate() {
     // Define our dates in calendar order (static)
     const dates = [
         { name: "Anzac Day", date: "April 25" },
-        { name: "Memorial Day (US)", date: "Last Monday in May" },
+        { name: "Memorial Day", date: "Last Monday in May" },
         { name: "Remembrance Day", date: "November 11" }, 
-        { name: "Armistice/Veterans Day", date: "November 11" }, 
-        { name: "Remembrance Sunday (UK)", date: "Second Sunday in November" }
+        { name: "Armistice Day / Veterans Day", date: "November 11" }, 
+        { name: "Remembrance Sunday", date: "Second Sunday in November" }
     ];
     
     // Calculate days until each date
@@ -212,18 +212,25 @@ function highlightNextDate() {
         return (current.daysUntil < nearest.daysUntil) ? current : nearest;
     }, { daysUntil: Number.MAX_SAFE_INTEGER });
     
-    // Get all date elements in the sidebar
-    const dateElements = document.querySelectorAll('.sidebar p strong');
+    // Get all date elements by finding all <p> elements with <strong> children
+    // that contain the date name (regardless of parent class)
+    const dateElements = document.querySelectorAll('p strong');
     
     // Remove any existing highlights
-    document.querySelectorAll('.sidebar p.next-date').forEach(el => {
+    document.querySelectorAll('p.next-date').forEach(el => {
         el.classList.remove('next-date');
     });
     
     // Apply highlight to the next date
     dateElements.forEach(el => {
-        const dateName = el.textContent.replace(':', '');
-        if (dateName === nextDate.name) {
+        const strongText = el.textContent.replace(':', '');
+        
+        // More flexible matching - find the date that is contained within the text
+        const matchingDate = dates.find(date => 
+            strongText.includes(date.name) || date.name.includes(strongText.split('(')[0].trim())
+        );
+        
+        if (matchingDate && matchingDate.name === nextDate.name) {
             const parentP = el.closest('p');
             if (parentP) {
                 parentP.classList.add('next-date');
@@ -247,7 +254,7 @@ function highlightNextDate() {
 function addHighlightStyles() {
     const styleElement = document.createElement('style');
     styleElement.textContent = `
-        .sidebar p.next-date {
+        p.next-date {
             background-color: #f5f5f5;
             border-left: 4px solid #d44;
             padding: 8px 10px;
@@ -270,8 +277,11 @@ document.addEventListener('DOMContentLoaded', function() {
     highlightNextDate();
     
     // Also run when language changes
-    document.getElementById('language').addEventListener('change', highlightNextDate);
-});    
+    const languageSelector = document.getElementById('language');
+    if (languageSelector) {
+        languageSelector.addEventListener('change', highlightNextDate);
+    }
+});
 </script>
     
     <!-- Ads integration -->
