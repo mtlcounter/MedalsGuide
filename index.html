@@ -394,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function() {
     border-radius: 4px;
   }
   
-  .accordion-button {
+.accordion-button {
     background-color: #ecf0f1;
     color: #333;
     cursor: pointer;
@@ -405,30 +405,31 @@ document.addEventListener('DOMContentLoaded', function() {
     outline: none;
     font-weight: 600;
     font-size: 1rem;
-    transition: 0.3s;
+    transition: 0.4s;
     border-radius: 15px;
     position: relative;
     color: #2c3e50 !important;
-  }
+    padding-right: 40px; /* Add space for the + icon */
+}
   
   .accordion-button:hover {
     background-color: #e4edf0;
   }
   
-  .accordion-button:after {
+.accordion-button:after {
     content: '+';
     font-size: 18px;
     font-weight: bold;
     position: absolute;
     right: 15px;
-    align-self: center !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-  }
+    top: 50%; /* Position at 50% from the top */
+    transform: translateY(-50%); /* Move up by half its height */
+    margin: 0; /* Remove any margins */
+}
   
-  .accordion-button.active:after {
-    content: '−';
-  }
+.accordion-button.active:after {
+    content: '-';
+}
   
   .accordion-content {
     padding: 0 15px;
