@@ -193,79 +193,95 @@ function getSecondSundayInNovember(year) {
 
 // Function to highlight the next upcoming date
 function highlightNextDate() {
-    // Define our dates in calendar order (static)
-    const dates = [
-        { name: "Anzac Day", date: "April 25" },
-        { name: "Memorial Day", date: "Last Monday in May" },
-        { name: "Remembrance Day", date: "November 11" }, 
-        { name: "Armistice Day / Veterans Day", date: "November 11" }, 
-        { name: "Remembrance Sunday", date: "Second Sunday in November" }
-    ];
+    // Get all commemorative date elements
+    const dateContainers = document.querySelectorAll('.commemorative-date');
     
-    // Calculate days until each date
-    dates.forEach(item => {
-        item.daysUntil = getDaysUntil(item.date);
+    // Create an array to store date information
+    const dates = [];
+    
+    // Extract date information from the HTML
+    dateContainers.forEach(container => {
+        const nameElement = container.querySelector('.event-name strong');
+        const dateElement = container.querySelector('.event-date');
+        
+        if (nameElement && dateElement) {
+            const eventName = nameElement.textContent.trim();
+            const dateStr = dateElement.textContent.trim();
+            
+            // Calculate days until this date
+            const daysUntil = getDaysUntil(dateStr);
+            
+            dates.push({
+                element: container,
+                name: eventName,
+                date: dateStr,
+                daysUntil: daysUntil
+            });
+        }
     });
     
-    // Find the next upcoming date (smallest positive days until)
-    let nextDate = dates.reduce((nearest, current) => {
-        return (current.daysUntil < nearest.daysUntil) ? current : nearest;
-    }, { daysUntil: Number.MAX_SAFE_INTEGER });
-    
-    // Get all date elements by finding all <p> elements with <strong> children
-    // that contain the date name (regardless of parent class)
-    const dateElements = document.querySelectorAll('p strong');
-    
     // Remove any existing highlights
-    document.querySelectorAll('p.next-date').forEach(el => {
+    document.querySelectorAll('.commemorative-date.next-date').forEach(el => {
         el.classList.remove('next-date');
     });
     
-    // Apply highlight to the next date
-    dateElements.forEach(el => {
-        const strongText = el.textContent.replace(':', '');
-        
-        // More flexible matching - find the date that is contained within the text
-        const matchingDate = dates.find(date => 
-            strongText.includes(date.name) || date.name.includes(strongText.split('(')[0].trim())
-        );
-        
-        if (matchingDate && matchingDate.name === nextDate.name) {
-            const parentP = el.closest('p');
-            if (parentP) {
-                parentP.classList.add('next-date');
-                
-                // Add countdown text
-                const existingCountdown = parentP.querySelector('.date-countdown');
-                if (existingCountdown) {
-                    existingCountdown.textContent = `(in ${nextDate.daysUntil} days)`;
-                } else {
-                    const countdownSpan = document.createElement('span');
-                    countdownSpan.className = 'date-countdown';
-                    countdownSpan.textContent = ` (in ${nextDate.daysUntil} days)`;
-                    parentP.appendChild(countdownSpan);
-                }
-            }
-        }
+    // Remove any existing countdown elements
+    document.querySelectorAll('.date-countdown').forEach(el => {
+        el.remove();
     });
+    
+    // Find the next upcoming date (smallest positive days until)
+    if (dates.length > 0) {
+        let nextDate = dates.reduce((nearest, current) => {
+            return (current.daysUntil < nearest.daysUntil) ? current : nearest;
+        }, { daysUntil: Number.MAX_SAFE_INTEGER });
+        
+        // Highlight the next date
+        nextDate.element.classList.add('next-date');
+        
+        // Add countdown text
+        const countdownSpan = document.createElement('p');
+        countdownSpan.className = 'date-countdown';
+        countdownSpan.textContent = `In ${nextDate.daysUntil} days`;
+        nextDate.element.appendChild(countdownSpan);
+    }
 }
 
 // Add CSS for highlighting
 function addHighlightStyles() {
     const styleElement = document.createElement('style');
     styleElement.textContent = `
-        p.next-date {
+        .commemorative-date {
+            margin-bottom: 20px;
+        }
+        
+        .commemorative-date p {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .event-name {
+            margin-bottom: 3px !important;
+        }
+        
+        .event-date {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .commemorative-date.next-date {
             background-color: #f5f5f5;
             border-left: 4px solid #d44;
             padding: 8px 10px;
-            margin: 5px 0;
+            margin: 5px 0 20px;
             border-radius: 3px;
-            font-weight: bold;
         }
         
         .date-countdown {
-            color: #d44;
+            color: #d44 !important;
             font-style: italic;
+            font-size: 0.85em !important;
+            margin-top: 5px !important;
         }
     `;
     document.head.appendChild(styleElement);
@@ -758,11 +774,26 @@ document.addEventListener('DOMContentLoaded', function() {
             </ul>
             
             <h3 style="margin-top: 10px; padding-top: 20px;">Important Dates</h3>
-            <p><strong>Anzac Day (AU):</strong> April 25</p>
-            <p><strong>Memorial Day (US):</strong> Last Monday in May</p>
-            <p><strong>Remembrance Day (AU):</strong> November 11</p>
-            <p><strong>Armistice Day / Veterans Day (US):</strong> November 11</p>
-            <p><strong>Remembrance Sunday (UK):</strong> Second Sunday in November</p>
+            <div class="commemorative-date">
+                <p class="event-name"><strong>Anzac Day (AU)</strong></p>
+                <p class="event-date">April 25</p>
+            </div>
+            <div class="commemorative-date">
+                <p class="event-name"><strong>Memorial Day (US)</strong></p>
+                <p class="event-date">Last Monday in May</p>
+            </div>
+            <div class="commemorative-date">
+                <p class="event-name"><strong>Remembrance Day (AU)</strong></p>
+                <p class="event-date">November 11</p>
+            </div>
+            <div class="commemorative-date">
+                <p class="event-name"><strong>Armistice Day / Veterans Day (US)</strong></p>
+                <p class="event-date">November 11</p>
+            </div>
+            <div class="commemorative-date">
+                <p class="event-name"><strong>Remembrance Sunday (UK)</strong></p>
+                <p class="event-date">Second Sunday in November</p>
+            </div>
         
         <h3 style="margin-top: 10px; padding-top: 20px;">Useful Resources</h3>
 <div class="useful-links">
