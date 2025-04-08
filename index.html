@@ -127,6 +127,151 @@
         mixpanel.track("Time on Page");
       });
     </script>
+
+<script type="text/javascript">
+// Function to calculate days until a specific date
+function getDaysUntil(targetDateStr) {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    let targetDate;
+    
+    // Handle special date formats
+    if (targetDateStr.includes("Last Monday in May")) {
+        // Calculate last Monday in May
+        targetDate = getLastMondayInMay(currentYear);
+    } else if (targetDateStr.includes("Second Sunday in November")) {
+        // Calculate second Sunday in November
+        targetDate = getSecondSundayInNovember(currentYear);
+    } else {
+        // Regular date (e.g., "April 25")
+        const [month, day] = targetDateStr.split(" ");
+        const monthIndex = getMonthIndex(month);
+        targetDate = new Date(currentYear, monthIndex, parseInt(day));
+    }
+    
+    // If the date has already passed this year, use next year's date
+    if (targetDate < now) {
+        if (targetDateStr.includes("Last Monday in May")) {
+            targetDate = getLastMondayInMay(currentYear + 1);
+        } else if (targetDateStr.includes("Second Sunday in November")) {
+            targetDate = getSecondSundayInNovember(currentYear + 1);
+        } else {
+            targetDate.setFullYear(currentYear + 1);
+        }
+    }
+    
+    // Calculate difference in days
+    const diffTime = targetDate - now;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+// Helper function to get month index from name
+function getMonthIndex(monthName) {
+    const months = {
+        "January": 0, "February": 1, "March": 2, "April": 3,
+        "May": 4, "June": 5, "July": 6, "August": 7,
+        "September": 8, "October": 9, "November": 10, "December": 11
+    };
+    return months[monthName];
+}
+
+// Helper function to get the last Monday in May
+function getLastMondayInMay(year) {
+    const lastDay = new Date(year, 4, 31); // May 31
+    const dayOfWeek = lastDay.getDay(); // 0 (Sunday) to 6 (Saturday)
+    const daysToSubtract = (dayOfWeek === 1) ? 0 : (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
+    return new Date(year, 4, 31 - daysToSubtract);
+}
+
+// Helper function to get the second Sunday in November
+function getSecondSundayInNovember(year) {
+    let date = new Date(year, 10, 1); // November 1
+    const dayOfWeek = date.getDay(); // 0 (Sunday) to 6 (Saturday)
+    const daysToAdd = (dayOfWeek === 0) ? 7 : 14 - dayOfWeek;
+    return new Date(year, 10, 1 + daysToAdd);
+}
+
+// Function to highlight the next upcoming date
+function highlightNextDate() {
+    // Define our dates in calendar order (static)
+    const dates = [
+        { name: "Anzac Day", date: "April 25" },
+        { name: "Memorial Day (US)", date: "Last Monday in May" },
+        { name: "November 11", date: "November 11" }, // Combined Remembrance/Armistice/Veterans Day
+        { name: "Remembrance Sunday (UK)", date: "Second Sunday in November" }
+    ];
+    
+    // Calculate days until each date
+    dates.forEach(item => {
+        item.daysUntil = getDaysUntil(item.date);
+    });
+    
+    // Find the next upcoming date (smallest positive days until)
+    let nextDate = dates.reduce((nearest, current) => {
+        return (current.daysUntil < nearest.daysUntil) ? current : nearest;
+    }, { daysUntil: Number.MAX_SAFE_INTEGER });
+    
+    // Get all date elements in the sidebar
+    const dateElements = document.querySelectorAll('.sidebar p strong');
+    
+    // Remove any existing highlights
+    document.querySelectorAll('.sidebar p.next-date').forEach(el => {
+        el.classList.remove('next-date');
+    });
+    
+    // Apply highlight to the next date
+    dateElements.forEach(el => {
+        const dateName = el.textContent.replace(':', '');
+        if (dateName === nextDate.name) {
+            const parentP = el.closest('p');
+            if (parentP) {
+                parentP.classList.add('next-date');
+                
+                // Add countdown text
+                const existingCountdown = parentP.querySelector('.date-countdown');
+                if (existingCountdown) {
+                    existingCountdown.textContent = `(in ${nextDate.daysUntil} days)`;
+                } else {
+                    const countdownSpan = document.createElement('span');
+                    countdownSpan.className = 'date-countdown';
+                    countdownSpan.textContent = ` (in ${nextDate.daysUntil} days)`;
+                    parentP.appendChild(countdownSpan);
+                }
+            }
+        }
+    });
+}
+
+// Add CSS for highlighting
+function addHighlightStyles() {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+        .sidebar p.next-date {
+            background-color: #f5f5f5;
+            border-left: 4px solid #d44;
+            padding: 8px 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .date-countdown {
+            color: #d44;
+            font-style: italic;
+        }
+    `;
+    document.head.appendChild(styleElement);
+}
+
+// Run on page load
+document.addEventListener('DOMContentLoaded', function() {
+    addHighlightStyles();
+    highlightNextDate();
+    
+    // Also run when language changes
+    document.getElementById('language').addEventListener('change', highlightNextDate);
+});    
+</script>
     
     <!-- Ads integration -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8352437217819703"
