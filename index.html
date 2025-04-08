@@ -312,6 +312,43 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<!-- JavaScript for accordion functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const accordionButtons = document.querySelectorAll('.accordion-button');
+    
+    accordionButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Toggle active class on the button
+        this.classList.toggle('active');
+        
+        // Get the content panel
+        const content = this.nextElementSibling;
+        
+        // Toggle the panel
+        if (content.style.maxHeight) {
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+        }
+      });
+    });
+  });
+  
+  // Modify the language change function to handle accordions
+  function changeLanguage() {
+    // Your existing language change code
+    
+    // After updating visibility of FAQ items, reset accordion states
+    const visibleAccordions = document.querySelectorAll('.faq-item[style*="display: block"] .accordion-button');
+    visibleAccordions.forEach(button => {
+      button.classList.remove('active');
+      const content = button.nextElementSibling;
+      content.style.maxHeight = null;
+    });
+  }
+</script>
     
     <!-- Ads integration -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8352437217819703"
@@ -350,6 +387,57 @@ document.addEventListener('DOMContentLoaded', function() {
         padding: 0;
         box-sizing: border-box;
     }
+
+    .faq-item {
+    margin-bottom: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+  }
+  
+  .accordion-button {
+    background-color: #f5f5f5;
+    color: #333;
+    cursor: pointer;
+    padding: 15px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: 0.3s;
+    border-radius: 4px;
+    position: relative;
+  }
+  
+  .accordion-button:hover {
+    background-color: #e9e9e9;
+  }
+  
+  .accordion-button:after {
+    content: '+';
+    font-size: 18px;
+    font-weight: bold;
+    position: absolute;
+    right: 15px;
+  }
+  
+  .accordion-button.active:after {
+    content: '−';
+  }
+  
+  .accordion-content {
+    padding: 0 15px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background-color: white;
+  }
+  
+  .accordion-button.active {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
     
     body {
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -673,105 +761,144 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="faq">
     <h2>Frequently Asked Questions</h2>
     
-    <!-- Original FAQs -->
-    <div class="faq-item">
-        <p class="faq-question">How should medals be arranged if wearing multiple medals?</p>
-        <p>Multiple medals should be arranged with the highest-ranking medal closest to the center of the chest. They are typically mounted on a single bar and can be court-mounted (where the ribbons are fixed to a backing board) for a neater appearance.</p>
-    </div>
-    
-    <div class="faq-item">
-        <p class="faq-question">Can I wear miniature versions of medals?</p>
-        <p>Yes, miniature medals are often worn for formal evening events or when full-size medals might be impractical. The positioning rules remain the same—left side for your own, right side for relatives.</p>
-    </div>
-    
-    <div class="faq-item">
-        <p class="faq-question">What is the difference between official medals and commemorative medals?</p>
-        <p>Official medals are awarded by the government for military service, bravery, or campaigns. Commemorative medals are unofficial medals typically produced to commemorate an event or anniversary. While both can be worn, official medals take precedence.</p>
-    </div>
-    
-    <div class="faq-item">
-        <p class="faq-question">Should medals be worn on the jacket or shirt?</p>
-        <p>Medals should be worn on the outermost garment, typically the jacket or blazer. If not wearing a jacket, they can be worn on a shirt or blouse.</p>
-    </div>
-    
-    <!-- Common FAQs for all regions -->
-    <div class="faq-item common-faq">
-        <p class="faq-question">How should medals be cleaned and maintained?</p>
-        <p>Medals should be handled with care and cleaned gently. Use a soft cloth for regular dusting. For tarnished medals, a mild solution of warm water and a drop of dish soap can be used, followed by thorough drying. Avoid harsh chemicals or polishes that might damage the finish. For ribbons, gentle spot cleaning is best, and they should be replaced if significantly faded or frayed.</p>
-    </div>
-    
-    <div class="faq-item common-faq">
-        <p class="faq-question">Where can I find out what medals my relative was entitled to?</p>
-        <p>Military service records are the primary source for medal entitlements. Check national archives, defense departments, or veteran affairs offices in your country. Many have online search capabilities or request forms. You'll typically need details like the service member's full name, date of birth, service number, and dates of service. Local veterans' organizations can also provide guidance on researching medal entitlements.</p>
-    </div>
-    
-    <div class="faq-item common-faq">
-        <p class="faq-question">What's the difference between service medals and gallantry/bravery medals?</p>
-        <p>Service medals are awarded for participating in specific campaigns, deployments, or periods of service. They recognize presence in a theater of operations or length of service. Gallantry or bravery medals, by contrast, are awarded for specific acts of courage, heroism, or distinguished conduct under fire. Service medals are generally worn after gallantry medals in order of precedence.</p>
-    </div>
-    
-    <!-- Australia-specific FAQs -->
-    <div class="faq-item au-faq">
-        <p class="faq-question">Can I wear my ancestor's medals during the Anzac Day march?</p>
-        <p>Yes, you can wear your ancestor's medals during the Anzac Day march, but they must be worn on the right side to signify they belonged to someone else. Ideally, wear only medals of direct relatives like parents or grandparents. The RSL guidelines recommend wearing only one set of family medals, typically those of the person with whom you have the closest relationship.</p>
-    </div>
-    
-    <div class="faq-item au-faq">
-        <p class="faq-question">How should I wear my relative's medals alongside my own?</p>
-        <p>If you're wearing both your own medals and those of a relative, wear your own medals on the left side and your relative's on the right side. Your own medals should be mounted in order of precedence. There is no formal requirement to match the mounting style between the two sets, though aesthetically many people prefer consistency in presentation.</p>
-    </div>
-    
-    <div class="faq-item au-faq">
-        <p class="faq-question">Is it appropriate to wear medals to the Dawn Service?</p>
-        <p>Yes, it is entirely appropriate to wear medals to the Dawn Service on Anzac Day. In fact, the Dawn Service is one of the most significant occasions for wearing medals, whether they are your own or those of a relative. Full-size medals are traditionally worn at morning ceremonies including the Dawn Service, while miniatures are more appropriate for evening functions.</p>
-    </div>
-    
-    <div class="faq-item au-faq">
-        <p class="faq-question">What's the protocol for wearing medals at the RSL after the service?</p>
-        <p>When attending RSL clubs after Anzac Day services or on Remembrance Day, it is acceptable and encouraged to continue wearing medals throughout the day. The same rules apply: your own medals on the left, relatives' medals on the right. Many RSLs have specific events and commemorations where medals are an important part of the occasion.</p>
-    </div>
-    
-    <!-- UK-specific FAQs -->
-    <div class="faq-item gb-faq">
-        <p class="faq-question">Should I wear medals with a poppy on Remembrance Day?</p>
-        <p>Yes, it is entirely appropriate to wear both medals and a poppy on Remembrance Day. The poppy should be positioned on the left side of your chest, either centered on the lapel or placed above any medals you're wearing. If you're wearing medals on behalf of a relative (on your right side), you would still wear the poppy on your left lapel.</p>
-    </div>
-    
-    <div class="faq-item gb-faq">
-        <p class="faq-question">What is the correct protocol for Remembrance Sunday parades versus Armistice Day ceremonies?</p>
-        <p>For both Remembrance Sunday parades and Armistice Day ceremonies, the medal protocol remains the same. Full-size medals are traditionally worn at both events. The main difference is that Remembrance Sunday typically involves more formal parades and church services, while Armistice Day (November 11th) often centers around the Two Minute Silence at 11am, which may be observed in various settings including workplaces and schools.</p>
-    </div>
-    
-    <div class="faq-item gb-faq">
-        <p class="faq-question">Can I wear medals awarded by Commonwealth countries?</p>
-        <p>Yes, medals awarded by Commonwealth countries can be worn alongside British medals. They should be positioned according to the official Order of Wear published by the Central Chancery of the Orders of Knighthood. Generally, British orders and decorations take precedence, followed by Commonwealth and then foreign awards. If you're wearing medals awarded to a relative from a Commonwealth country, they should be worn on the right side.</p>
-    </div>
-    
-    <div class="faq-item gb-faq">
-        <p class="faq-question">How should medals be worn with formal morning dress or evening wear?</p>
-        <p>With formal morning dress, full-size medals are worn. On evening wear (white tie or black tie), miniature medals are traditionally worn. For white tie events, miniature medals are worn on the left lapel of the tailcoat. For black tie events, miniatures are worn on the left lapel of the dinner jacket. Medal ribbons alone are not generally worn with formal dress. The same rules apply regarding which side to wear the medals: left for your own, right for relatives.</p>
-    </div>
-    
-    <!-- US-specific FAQs -->
-    <div class="faq-item us-faq">
-        <p class="faq-question">Is there a difference in how medals should be worn on Veterans Day versus Memorial Day?</p>
-        <p>The protocol for wearing medals is the same for both Veterans Day and Memorial Day. The distinction lies in the purpose of the observances: Veterans Day honors all who have served, while Memorial Day specifically remembers those who died in service. For both holidays, veterans wear their medals on the left side, while family members wear their relatives' medals on the right side.</p>
-    </div>
-    
-    <div class="faq-item us-faq">
-        <p class="faq-question">How do civilian decorations compare to military medals in terms of placement?</p>
-        <p>Civilian decorations awarded by the U.S. government (such as Presidential Medals of Freedom or Civilian Service Medals) are typically worn in the same manner as military medals: on the left side. In terms of precedence, most U.S. military decorations take precedence over civilian awards, though certain high civilian honors like the Medal of Freedom may be positioned near the top. When wearing both types, generally display military decorations closest to the heart.</p>
-    </div>
-    
-    <div class="faq-item us-faq">
-        <p class="faq-question">What's the protocol for wearing medals at military funerals?</p>
-        <p>For military funerals, veterans attending should wear their medals on the left side as a sign of respect. Family members of the deceased may wear the deceased's medals on their right side. Full-size medals are appropriate for daytime funerals, while miniatures would be worn for evening services. Active military personnel typically wear their dress uniform with ribbons rather than medals, according to their service branch regulations.</p>
-    </div>
-    
-    <div class="faq-item us-faq">
-        <p class="faq-question">Can I wear ribbons instead of full medals to certain ceremonies?</p>
-        <p>Yes, in the United States, it's common and acceptable to wear ribbon bars instead of full-size medals at many ceremonies. Ribbon bars are particularly appropriate for less formal events and when in certain uniforms. Active military personnel typically wear ribbons on their service uniforms following their branch regulations. Veterans may choose either ribbons or medals, though full medals are preferred for significant occasions like Veterans Day and Memorial Day ceremonies.</p>
-    </div>
+<!-- Updated FAQs -->
+
+<div class="faq-item">
+  <button class="accordion-button">How should medals be arranged if wearing multiple medals?</button>
+  <div class="accordion-content">
+    <p>Multiple medals should be arranged with the highest-ranking medal closest to the center of the chest. They are typically mounted on a single bar and can be court-mounted (where the ribbons are fixed to a backing board) for a neater appearance.</p>
+  </div>
+</div>
+
+<div class="faq-item">
+  <button class="accordion-button">Can I wear miniature versions of medals?</button>
+  <div class="accordion-content">
+    <p>Yes, miniature medals are often worn for formal evening events or when full-size medals might be impractical. The positioning rules remain the same—left side for your own, right side for relatives.</p>
+  </div>
+</div>
+
+<div class="faq-item">
+  <button class="accordion-button">What is the difference between official medals and commemorative medals?</button>
+  <div class="accordion-content">
+    <p>Official medals are awarded by the government for military service, bravery, or campaigns. Commemorative medals are unofficial medals typically produced to commemorate an event or anniversary. While both can be worn, official medals take precedence.</p>
+  </div>
+</div>
+
+<div class="faq-item">
+  <button class="accordion-button">Should medals be worn on the jacket or shirt?</button>
+  <div class="accordion-content">
+    <p>Medals should be worn on the outermost garment, typically the jacket or blazer. If not wearing a jacket, they can be worn on a shirt or blouse.</p>
+  </div>
+</div>
+
+<!-- Common FAQs -->
+<div class="faq-item common-faq">
+  <button class="accordion-button">How should medals be cleaned and maintained?</button>
+  <div class="accordion-content">
+    <p>Medals should be handled with care and cleaned gently. Use a soft cloth for regular dusting. For tarnished medals, a mild solution of warm water and a drop of dish soap can be used, followed by thorough drying. Avoid harsh chemicals or polishes that might damage the finish. For ribbons, gentle spot cleaning is best, and they should be replaced if significantly faded or frayed.</p>
+  </div>
+</div>
+
+<div class="faq-item common-faq">
+  <button class="accordion-button">Where can I find out what medals my relative was entitled to?</button>
+  <div class="accordion-content">
+    <p>Military service records are the primary source for medal entitlements. Check national archives, defense departments, or veteran affairs offices in your country. Many have online search capabilities or request forms. You'll typically need details like the service member's full name, date of birth, service number, and dates of service. Local veterans' organizations can also provide guidance on researching medal entitlements.</p>
+  </div>
+</div>
+
+<div class="faq-item common-faq">
+  <button class="accordion-button">What's the difference between service medals and gallantry/bravery medals?</button>
+  <div class="accordion-content">
+    <p>Service medals are awarded for participating in specific campaigns, deployments, or periods of service. They recognize presence in a theater of operations or length of service. Gallantry or bravery medals, by contrast, are awarded for specific acts of courage, heroism, or distinguished conduct under fire. Service medals are generally worn after gallantry medals in order of precedence.</p>
+  </div>
+</div>
+
+<!-- Australia-specific FAQs -->
+<div class="faq-item au-faq">
+  <button class="accordion-button">Can I wear my ancestor's medals during the Anzac Day march?</button>
+  <div class="accordion-content">
+    <p>Yes, you can wear your ancestor's medals during the Anzac Day march, but they must be worn on the right side to signify they belonged to someone else. Ideally, wear only medals of direct relatives like parents or grandparents. The RSL guidelines recommend wearing only one set of family medals, typically those of the person with whom you have the closest relationship.</p>
+  </div>
+</div>
+
+<div class="faq-item au-faq">
+  <button class="accordion-button">How should I wear my relative's medals alongside my own?</button>
+  <div class="accordion-content">
+    <p>If you're wearing both your own medals and those of a relative, wear your own medals on the left side and your relative's on the right side. Your own medals should be mounted in order of precedence. There is no formal requirement to match the mounting style between the two sets, though aesthetically many people prefer consistency in presentation.</p>
+  </div>
+</div>
+
+<div class="faq-item au-faq">
+  <button class="accordion-button">Is it appropriate to wear medals to the Dawn Service?</button>
+  <div class="accordion-content">
+    <p>Yes, it is entirely appropriate to wear medals to the Dawn Service on Anzac Day. In fact, the Dawn Service is one of the most significant occasions for wearing medals, whether they are your own or those of a relative. Full-size medals are traditionally worn at morning ceremonies including the Dawn Service, while miniatures are more appropriate for evening functions.</p>
+  </div>
+</div>
+
+<div class="faq-item au-faq">
+  <button class="accordion-button">What's the protocol for wearing medals at the RSL after the service?</button>
+  <div class="accordion-content">
+    <p>When attending RSL clubs after Anzac Day services or on Remembrance Day, it is acceptable and encouraged to continue wearing medals throughout the day. The same rules apply: your own medals on the left, relatives' medals on the right. Many RSLs have specific events and commemorations where medals are an important part of the occasion.</p>
+  </div>
+</div>
+
+<!-- UK-specific FAQs -->
+<div class="faq-item gb-faq">
+  <button class="accordion-button">Should I wear medals with a poppy on Remembrance Day?</button>
+  <div class="accordion-content">
+    <p>Yes, it is entirely appropriate to wear both medals and a poppy on Remembrance Day. The poppy should be positioned on the left side of your chest, either centered on the lapel or placed above any medals you're wearing. If you're wearing medals on behalf of a relative (on your right side), you would still wear the poppy on your left lapel.</p>
+  </div>
+</div>
+
+<div class="faq-item gb-faq">
+  <button class="accordion-button">What is the correct protocol for Remembrance Sunday parades versus Armistice Day ceremonies?</button>
+  <div class="accordion-content">
+    <p>For both Remembrance Sunday parades and Armistice Day ceremonies, the medal protocol remains the same. Full-size medals are traditionally worn at both events. The main difference is that Remembrance Sunday typically involves more formal parades and church services, while Armistice Day (November 11th) often centers around the Two Minute Silence at 11am, which may be observed in various settings including workplaces and schools.</p>
+  </div>
+</div>
+
+<div class="faq-item gb-faq">
+  <button class="accordion-button">Can I wear medals awarded by Commonwealth countries?</button>
+  <div class="accordion-content">
+    <p>Yes, medals awarded by Commonwealth countries can be worn alongside British medals. They should be positioned according to the official Order of Wear published by the Central Chancery of the Orders of Knighthood. Generally, British orders and decorations take precedence, followed by Commonwealth and then foreign awards. If you're wearing medals awarded to a relative from a Commonwealth country, they should be worn on the right side.</p>
+  </div>
+</div>
+
+<div class="faq-item gb-faq">
+  <button class="accordion-button">How should medals be worn with formal morning dress or evening wear?</button>
+  <div class="accordion-content">
+    <p>With formal morning dress, full-size medals are worn. On evening wear (white tie or black tie), miniature medals are traditionally worn. For white tie events, miniature medals are worn on the left lapel of the tailcoat. For black tie events, miniatures are worn on the left lapel of the dinner jacket. Medal ribbons alone are not generally worn with formal dress. The same rules apply regarding which side to wear the medals: left for your own, right for relatives.</p>
+  </div>
+</div>
+
+<!-- US-specific FAQs -->
+<div class="faq-item us-faq">
+  <button class="accordion-button">Is there a difference in how medals should be worn on Veterans Day versus Memorial Day?</button>
+  <div class="accordion-content">
+    <p>The protocol for wearing medals is the same for both Veterans Day and Memorial Day. The distinction lies in the purpose of the observances: Veterans Day honors all who have served, while Memorial Day specifically remembers those who died in service. For both holidays, veterans wear their medals on the left side, while family members wear their relatives' medals on the right side.</p>
+  </div>
+</div>
+
+<div class="faq-item us-faq">
+  <button class="accordion-button">How do civilian decorations compare to military medals in terms of placement?</button>
+  <div class="accordion-content">
+    <p>Civilian decorations awarded by the U.S. government (such as Presidential Medals of Freedom or Civilian Service Medals) are typically worn in the same manner as military medals: on the left side. In terms of precedence, most U.S. military decorations take precedence over civilian awards, though certain high civilian honors like the Medal of Freedom may be positioned near the top. When wearing both types, generally display military decorations closest to the heart.</p>
+  </div>
+</div>
+
+<div class="faq-item us-faq">
+  <button class="accordion-button">What's the protocol for wearing medals at military funerals?</button>
+  <div class="accordion-content">
+    <p>For military funerals, veterans attending should wear their medals on the left side as a sign of respect. Family members of the deceased may wear the deceased's medals on their right side. Full-size medals are appropriate for daytime funerals, while miniatures would be worn for evening services. Active military personnel typically wear their dress uniform with ribbons rather than medals, according to their service branch regulations.</p>
+  </div>
+</div>
+
+<div class="faq-item us-faq">
+  <button class="accordion-button">Can I wear ribbons instead of full medals to certain ceremonies?</button>
+  <div class="accordion-content">
+    <p>Yes, in the United States, it's common and acceptable to wear ribbon bars instead of full-size medals at many ceremonies. Ribbon bars are particularly appropriate for less formal events and when in certain uniforms. Active military personnel typically wear ribbons on their service uniforms following their branch regulations. Veterans may choose either ribbons or medals, though full medals are preferred for significant occasions like Veterans Day and Memorial Day ceremonies.</p>
+  </div>
+</div>
             </div>
         </main>
         
