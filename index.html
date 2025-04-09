@@ -621,13 +621,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     footer {
-        margin-top: 3rem;
-        padding: 1.5rem 0;
-        text-align: center;
-        color: var(--accent-color);
-        border-top: 1px solid var(--accent-color);
-        font-size: var(--text-sm);
-    }
+    margin-top: 3rem;
+    padding: 1.5rem 0;
+    text-align: center;
+    color: var(--accent-color);
+    border-top: 1px solid var(--accent-color);
+    font-size: var(--text-sm);
+}
+
+/* Style for the contact link to match footer text */
+.feedback-section a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+/* Optional hover effect for better user experience */
+.feedback-section a:hover {
+    text-decoration: underline;
+}
     
     .ad-space {
         background-color: #f0f0f0;
@@ -984,9 +995,14 @@ document.addEventListener('DOMContentLoaded', function() {
         </aside>
     </div>
     
-    <footer>
+<footer>
     <p>© <span id="current-year">2025</span> Medals Guide | This site is provided as a community service</p>
     <p id="footer-message">Wearing medals with pride and respect honors those who have served</p>
+    <p class="feedback-section">
+        <a href="#" onclick="handleFeedbackEmailClick(event)" id="feedback-email-link">
+            Contact
+        </a>
+    </p>
 </footer>
 
     <script>
@@ -1244,6 +1260,18 @@ document.querySelectorAll('.au-links, .gb-links, .us-links').forEach(el => {
             detectUserRegion();
             updateSeasonalContent();
         };
+
+        // Email obfuscation function
+function handleFeedbackEmailClick(e) {
+    e.preventDefault();
+    const user = "webmaster";
+    const at = String.fromCharCode(64);
+    const domain = "medalsguide";
+    const dot = ".";
+    const tld = "com";
+    const emailAddress = user + at + domain + dot + tld;
+    window.location.href = 'mailto:' + emailAddress + '?subject=Medals%20Guide%20Feedback';
+}
     </script>
 </body>
 </html>
