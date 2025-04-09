@@ -100,7 +100,16 @@
     }
   }]
 }
-</script></script>
+</script>
+
+<!-- Mixpanel -->
+    <script type="text/javascript">
+    (function(f,b){if(!b.__SV){var e,g,i,h;window.mixpanel=b;b._i=[];b.init=function(e,f,c){function g(a,d){var b=d.split(".");2==b.length&&(a=a[b[0]],d=b[1]);a[d]=function(){a.push([d].concat(Array.prototype.slice.call(arguments,0)))}}var a=b;"undefined"!==typeof c?a=b[c]=[]:c="mixpanel";a.people=a.people||[];a.toString=function(a){var d="mixpanel";"mixpanel"!==c&&(d+="."+c);a||(d+=" (stub)");return d};a.people.toString=function(){return a.toString(1)+".people (stub)"};i="disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" ");
+    for(h=0;h<i.length;h++)g(a,i[h]);b._i.push([e,f,c])};b.__SV=1.2;e=f.createElement("script");e.type="text/javascript";e.async=!0;e.src="https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";g=f.getElementsByTagName("script")[0];g.parentNode.insertBefore(e,g)}})(document,window.mixpanel||[]);
+    
+    // Initialize with your project token
+    mixpanel.init("112636d2fcb29096154572f0d0d71e5e");
+    </script>
 
 <script type="text/javascript">
 // Function to calculate days until a specific date
@@ -1155,5 +1164,212 @@ function handleFeedbackEmailClick(e) {
     window.location.href = 'mailto:' + emailAddress + '?subject=Medals%20Guide%20Feedback';
 }
     </script>
+
+<script type="text/javascript">
+// Mixpanel tracking implementation for medalsguide.com
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Track page view with basic information
+    trackPageView();
+    
+    // 2. Track FAQ accordion expansions
+    trackFAQAccordions();
+    
+    // 3. Track useful resources link clicks
+    trackUsefulLinks();
+    
+    // 4. Track region changes
+    trackRegionChanges();
+    
+    // 5. Track contact CTA clicks
+    trackContactCTA();
+});
+
+// Track page view with device and browser info
+function trackPageView() {
+    // Get browser info
+    const userAgent = navigator.userAgent;
+    const browserInfo = getBrowserInfo(userAgent);
+    
+    // Get device type
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    const deviceType = isMobile ? 'Mobile' : 'Desktop';
+    
+    // Get referrer information
+    const referrer = document.referrer;
+    const referrerDomain = referrer ? new URL(referrer).hostname : 'Direct';
+    
+    // Get current region from dropdown
+    const regionSelector = document.getElementById('language');
+    const currentRegion = regionSelector ? regionSelector.value : 'unknown';
+    
+    // Track page view event
+    mixpanel.track('Page View', {
+        'page': window.location.pathname,
+        'title': document.title,
+        'device_type': deviceType,
+        'browser_name': browserInfo.browser,
+        'browser_version': browserInfo.version,
+        'referrer': referrerDomain,
+        'full_referrer': referrer,
+        'region': currentRegion
+    });
+}
+
+// Parse browser information from user agent
+function getBrowserInfo(userAgent) {
+    let browser = 'Unknown';
+    let version = 'Unknown';
+    
+    // Chrome
+    if (/Chrome/.test(userAgent) && !/Chromium|Edge|Edg|OPR|Opera/.test(userAgent)) {
+        browser = 'Chrome';
+        version = userAgent.match(/Chrome\/(\d+\.\d+)/)?.[1] || '';
+    } 
+    // Firefox
+    else if (/Firefox/.test(userAgent)) {
+        browser = 'Firefox';
+        version = userAgent.match(/Firefox\/(\d+\.\d+)/)?.[1] || '';
+    } 
+    // Safari
+    else if (/Safari/.test(userAgent) && !/Chrome|Chromium|Edge|Edg|OPR|Opera/.test(userAgent)) {
+        browser = 'Safari';
+        version = userAgent.match(/Version\/(\d+\.\d+)/)?.[1] || '';
+    } 
+    // Edge
+    else if (/Edge|Edg/.test(userAgent)) {
+        browser = 'Edge';
+        version = userAgent.match(/(?:Edge|Edg)\/(\d+\.\d+)/)?.[1] || '';
+    } 
+    // Opera
+    else if (/OPR|Opera/.test(userAgent)) {
+        browser = 'Opera';
+        version = userAgent.match(/(?:OPR|Opera)\/(\d+\.\d+)/)?.[1] || '';
+    } 
+    // IE
+    else if (/MSIE|Trident/.test(userAgent)) {
+        browser = 'Internet Explorer';
+        version = userAgent.match(/(?:MSIE |rv:)(\d+\.\d+)/)?.[1] || '';
+    }
+    
+    return { browser, version };
+}
+
+// Track FAQ accordion expansions
+function trackFAQAccordions() {
+    const accordionButtons = document.querySelectorAll('.accordion-button');
+    
+    accordionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Get FAQ category (common, au, gb, us)
+            let category = 'common';
+            const parentDiv = this.closest('.faq-item');
+            if (parentDiv) {
+                if (parentDiv.classList.contains('au-faq')) category = 'Australia';
+                else if (parentDiv.classList.contains('gb-faq')) category = 'UK';
+                else if (parentDiv.classList.contains('us-faq')) category = 'US';
+                else if (parentDiv.classList.contains('common-faq')) category = 'Common';
+            }
+            
+            // Get FAQ question text
+            const questionText = this.textContent.trim();
+            
+            // Check if accordion is being opened or closed
+            const isOpening = !this.classList.contains('active');
+            
+            if (isOpening) {
+                // Track FAQ expansion
+                mixpanel.track('FAQ Expanded', {
+                    'faq_question': questionText,
+                    'faq_category': category,
+                    'region': document.getElementById('language').value
+                });
+            }
+        });
+    });
+}
+
+// Track useful resources link clicks
+function trackUsefulLinks() {
+    const usefulLinks = document.querySelectorAll('.useful-links a');
+    
+    usefulLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Get link category
+            let category = 'unknown';
+            if (this.closest('.au-links')) category = 'Australia';
+            else if (this.closest('.us-links')) category = 'US';
+            else if (this.closest('.gb-links')) category = 'UK';
+            
+            // Track link click
+            mixpanel.track('Resource Link Clicked', {
+                'link_text': this.textContent.trim(),
+                'link_url': this.href,
+                'link_category': category,
+                'region': document.getElementById('language').value
+            });
+        });
+    });
+}
+
+// Track region changes
+function trackRegionChanges() {
+    const regionSelector = document.getElementById('language');
+    
+    if (regionSelector) {
+        // Store initial region value
+        const initialRegion = regionSelector.value;
+        
+        regionSelector.addEventListener('change', function() {
+            const newRegion = this.value;
+            
+            // Track region change
+            mixpanel.track('Region Changed', {
+                'previous_region': initialRegion,
+                'new_region': newRegion
+            });
+        });
+    }
+}
+
+// Track contact CTA clicks
+function trackContactCTA() {
+    const contactLink = document.getElementById('feedback-email-link');
+    
+    if (contactLink) {
+        contactLink.addEventListener('click', function(e) {
+            // Track contact button click
+            mixpanel.track('Contact CTA Clicked', {
+                'location': 'footer',
+                'region': document.getElementById('language').value
+            });
+        });
+    }
+}
+
+// Enhance existing changeLanguage function to track region changes
+const originalChangeLanguage = window.changeLanguage;
+window.changeLanguage = function() {
+    // Get previous region before change
+    const previousRegion = document.getElementById('language').value;
+    
+    // Run original function
+    if (typeof originalChangeLanguage === 'function') {
+        originalChangeLanguage();
+    }
+    
+    // Get new region after change
+    const newRegion = document.getElementById('language').value;
+    
+    // Track only if the region actually changed
+    if (previousRegion !== newRegion) {
+        mixpanel.track('Region Changed', {
+            'previous_region': previousRegion,
+            'new_region': newRegion
+        });
+    }
+};    
+</script>
+
 </body>
 </html>
