@@ -319,31 +319,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
   
-  // Modify the language change function to handle accordions
-  function changeLanguage() {
-  // Reset ALL accordions in the document, regardless of type or visibility
-    const allAccordions = document.querySelectorAll('.accordion-button');
-    allAccordions.forEach(button => {
-      // Force remove the active class
-      button.classList.remove('active');
-      
-      // Force collapse the content panel
-      const content = button.nextElementSibling;
-      if (content) {
-        content.style.maxHeight = null;
-      }
-    });
-    
-    // Force a small delay to ensure all styles are properly updated
-    setTimeout(() => {
-      // Double-check for any accordions that might still be expanded
-      document.querySelectorAll('.accordion-content').forEach(content => {
-        if (content.style.maxHeight && content.style.maxHeight !== "null" && content.style.maxHeight !== "0px") {
-          content.style.maxHeight = null;
-        }
-      });
-    }, 50);
-  }
 </script>
     
     <!-- Ads integration -->
@@ -1053,6 +1028,28 @@ function fallbackToBrowserLanguage() {
         
 // Language localization function
     function changeLanguage() {
+          // Reset ALL accordions in the document, regardless of type or visibility
+    const allAccordions = document.querySelectorAll('.accordion-button');
+    allAccordions.forEach(button => {
+      // Force remove the active class
+      button.classList.remove('active');
+      
+      // Force collapse the content panel
+      const content = button.nextElementSibling;
+      if (content) {
+        content.style.maxHeight = null;
+      }
+    });
+    
+    // Force a small delay to ensure all styles are properly updated
+    setTimeout(() => {
+      // Double-check for any accordions that might still be expanded
+      document.querySelectorAll('.accordion-content').forEach(content => {
+        if (content.style.maxHeight && content.style.maxHeight !== "null" && content.style.maxHeight !== "0px") {
+          content.style.maxHeight = null;
+        }
+      });
+    }, 50);
         const language = document.getElementById('language').value;
         let memorialContent = '';
         let quickAnswer = '';
