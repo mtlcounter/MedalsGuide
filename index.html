@@ -1166,209 +1166,430 @@ function handleFeedbackEmailClick(e) {
     </script>
 
 <script type="text/javascript">
-// Mixpanel tracking implementation for medalsguide.com
+/**
+ * Enhanced Mixpanel tracking implementation for medalsguide.com
+ * Includes improved error handling, better state management, and more reliable event tracking
+ */
 
+// Wait for DOM to be fully loaded before initializing tracking
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Track page view with basic information
-    trackPageView();
-    
-    // 2. Track FAQ accordion expansions
-    trackFAQAccordions();
-    
-    // 3. Track useful resources link clicks
-    trackUsefulLinks();
-    
-    // 4. Track region changes
-    trackRegionChanges();
-    
-    // 5. Track contact CTA clicks
-    trackContactCTA();
-});
-
-// Track page view with device and browser info
-function trackPageView() {
-    // Get browser info
-    const userAgent = navigator.userAgent;
-    const browserInfo = getBrowserInfo(userAgent);
-    
-    // Get device type
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-    const deviceType = isMobile ? 'Mobile' : 'Desktop';
-    
-    // Get referrer information
-    const referrer = document.referrer;
-    const referrerDomain = referrer ? new URL(referrer).hostname : 'Direct';
-    
-    // Get current region from dropdown
-    const regionSelector = document.getElementById('language');
-    const currentRegion = regionSelector ? regionSelector.value : 'unknown';
-    
-    // Track page view event
-    mixpanel.track('Page View', {
-        'page': window.location.pathname,
-        'title': document.title,
-        'device_type': deviceType,
-        'browser_name': browserInfo.browser,
-        'browser_version': browserInfo.version,
-        'referrer': referrerDomain,
-        'full_referrer': referrer,
-        'region': currentRegion
-    });
-}
-
-// Parse browser information from user agent
-function getBrowserInfo(userAgent) {
-    let browser = 'Unknown';
-    let version = 'Unknown';
-    
-    // Chrome
-    if (/Chrome/.test(userAgent) && !/Chromium|Edge|Edg|OPR|Opera/.test(userAgent)) {
-        browser = 'Chrome';
-        version = userAgent.match(/Chrome\/(\d+\.\d+)/)?.[1] || '';
-    } 
-    // Firefox
-    else if (/Firefox/.test(userAgent)) {
-        browser = 'Firefox';
-        version = userAgent.match(/Firefox\/(\d+\.\d+)/)?.[1] || '';
-    } 
-    // Safari
-    else if (/Safari/.test(userAgent) && !/Chrome|Chromium|Edge|Edg|OPR|Opera/.test(userAgent)) {
-        browser = 'Safari';
-        version = userAgent.match(/Version\/(\d+\.\d+)/)?.[1] || '';
-    } 
-    // Edge
-    else if (/Edge|Edg/.test(userAgent)) {
-        browser = 'Edge';
-        version = userAgent.match(/(?:Edge|Edg)\/(\d+\.\d+)/)?.[1] || '';
-    } 
-    // Opera
-    else if (/OPR|Opera/.test(userAgent)) {
-        browser = 'Opera';
-        version = userAgent.match(/(?:OPR|Opera)\/(\d+\.\d+)/)?.[1] || '';
-    } 
-    // IE
-    else if (/MSIE|Trident/.test(userAgent)) {
-        browser = 'Internet Explorer';
-        version = userAgent.match(/(?:MSIE |rv:)(\d+\.\d+)/)?.[1] || '';
+    // Check if Mixpanel is available
+    if (typeof mixpanel === 'undefined') {
+        console.error('Mixpanel not found. Tracking will not work.');
+        return;
     }
     
-    return { browser, version };
-}
+    try {
+        // Initialize all tracking functions
+        trackPageView();
+        integrateAccordionTracking();
+        trackUsefulLinks();
+        trackRegionChanges();
+        trackContactCTA();
+        
+        console.log('All tracking functions initialized successfully');
+    } catch (e) {
+        console.error('Error initializing tracking:', e);
+    }
+});
 
-// Track FAQ accordion expansions
-function trackFAQAccordions() {
-    const accordionButtons = document.querySelectorAll('.accordion-button');
-    
-    accordionButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Get FAQ category (common, au, gb, us)
-            let category = 'common';
-            const parentDiv = this.closest('.faq-item');
-            if (parentDiv) {
-                if (parentDiv.classList.contains('au-faq')) category = 'Australia';
-                else if (parentDiv.classList.contains('gb-faq')) category = 'UK';
-                else if (parentDiv.classList.contains('us-faq')) category = 'US';
-                else if (parentDiv.classList.contains('common-faq')) category = 'Common';
-            }
-            
-            // Get FAQ question text
-            const questionText = this.textContent.trim();
-            
-            // Check if accordion is being opened or closed
-            const isOpening = !this.classList.contains('active');
-            
-            if (isOpening) {
-                // Track FAQ expansion
-                mixpanel.track('FAQ Expanded', {
-                    'faq_question': questionText,
-                    'faq_category': category,
-                    'region': document.getElementById('language').value
-                });
-            }
+/**
+ * Track page view with comprehensive device and browser info
+ */
+function trackPageView() {
+    try {
+        // Get browser info
+        const userAgent = navigator.userAgent;
+        const browserInfo = getBrowserInfo(userAgent);
+        
+        // Get device type
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+        const deviceType = isMobile ? 'Mobile' : 'Desktop';
+        
+        // Get referrer information
+        const referrer = document.referrer;
+        const referrerDomain = referrer ? new URL(referrer).hostname : 'Direct';
+        
+        // Get current region from dropdown
+        const regionSelector = document.getElementById('language');
+        const currentRegion = regionSelector ? regionSelector.value : 'unknown';
+        
+        // Track page view event
+        mixpanel.track('Page View', {
+            'page': window.location.pathname,
+            'title': document.title,
+            'device_type': deviceType,
+            'browser_name': browserInfo.browser,
+            'browser_version': browserInfo.version,
+            'referrer': referrerDomain,
+            'full_referrer': referrer,
+            'region': currentRegion,
+            'timestamp': new Date().toISOString()
         });
-    });
+        
+        console.log('Page view tracked successfully');
+    } catch (error) {
+        console.error('Error tracking page view:', error);
+    }
 }
 
-// Track useful resources link clicks
+/**
+ * Parse browser information from user agent
+ */
+function getBrowserInfo(userAgent) {
+    try {
+        let browser = 'Unknown';
+        let version = 'Unknown';
+        
+        // Chrome
+        if (/Chrome/.test(userAgent) && !/Chromium|Edge|Edg|OPR|Opera/.test(userAgent)) {
+            browser = 'Chrome';
+            version = userAgent.match(/Chrome\/(\d+\.\d+)/)?.[1] || '';
+        } 
+        // Firefox
+        else if (/Firefox/.test(userAgent)) {
+            browser = 'Firefox';
+            version = userAgent.match(/Firefox\/(\d+\.\d+)/)?.[1] || '';
+        } 
+        // Safari
+        else if (/Safari/.test(userAgent) && !/Chrome|Chromium|Edge|Edg|OPR|Opera/.test(userAgent)) {
+            browser = 'Safari';
+            version = userAgent.match(/Version\/(\d+\.\d+)/)?.[1] || '';
+        } 
+        // Edge
+        else if (/Edge|Edg/.test(userAgent)) {
+            browser = 'Edge';
+            version = userAgent.match(/(?:Edge|Edg)\/(\d+\.\d+)/)?.[1] || '';
+        } 
+        // Opera
+        else if (/OPR|Opera/.test(userAgent)) {
+            browser = 'Opera';
+            version = userAgent.match(/(?:OPR|Opera)\/(\d+\.\d+)/)?.[1] || '';
+        } 
+        // IE
+        else if (/MSIE|Trident/.test(userAgent)) {
+            browser = 'Internet Explorer';
+            version = userAgent.match(/(?:MSIE |rv:)(\d+\.\d+)/)?.[1] || '';
+        }
+        
+        return { browser, version };
+    } catch (error) {
+        console.error('Error parsing browser info:', error);
+        return { browser: 'Unknown', version: 'Unknown' };
+    }
+}
+
+/**
+ * Integrate with existing accordion functionality and add tracking
+ */
+function integrateAccordionTracking() {
+    try {
+        // Find all accordion buttons
+        const accordionButtons = document.querySelectorAll('.accordion-button');
+        
+        if (accordionButtons.length === 0) {
+            console.warn('No accordion buttons found for tracking');
+            return;
+        }
+        
+        console.log(`Found ${accordionButtons.length} accordion buttons to track`);
+        
+        // Replace existing accordion click handlers with our combined version
+        accordionButtons.forEach((button, index) => {
+            // Remove existing event listeners if possible
+            if (button._trackingHandlerAttached) {
+                // Skip if we've already attached our handler to avoid duplicates
+                return;
+            }
+            
+            // Create a new combined handler
+            const combinedHandler = function(event) {
+                try {
+                    // Important: Capture the state BEFORE toggling
+                    const wasActive = this.classList.contains('active');
+                    const isExpanding = !wasActive;
+                    
+                    // Get FAQ category
+                    let category = 'Common';
+                    const parentDiv = this.closest('.faq-item');
+                    if (parentDiv) {
+                        if (parentDiv.classList.contains('au-faq')) category = 'Australia';
+                        else if (parentDiv.classList.contains('gb-faq')) category = 'UK';
+                        else if (parentDiv.classList.contains('us-faq')) category = 'US';
+                        else if (parentDiv.classList.contains('common-faq')) category = 'Common';
+                    }
+                    
+                    // Get FAQ question text
+                    const questionText = this.textContent.trim();
+                    
+                    // Get the content panel
+                    const content = this.nextElementSibling;
+                    
+                    // Execute original accordion functionality
+                    this.classList.toggle('active');
+                    
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                    }
+                    
+                    // Only track when expanding, not collapsing (matching original logic)
+                    if (isExpanding) {
+                        // Track with a small delay to ensure UI has updated
+                        setTimeout(() => {
+                            try {
+                                mixpanel.track('FAQ Expanded', {
+                                    'faq_question': questionText,
+                                    'faq_category': category,
+                                    'region': document.getElementById('language')?.value || 'unknown',
+                                    'timestamp': new Date().toISOString(),
+                                    'faq_index': index
+                                });
+                                console.log(`Tracked expansion of FAQ: "${questionText}"`);
+                            } catch (trackError) {
+                                console.error('Failed to send Mixpanel event:', trackError);
+                            }
+                        }, 10);
+                    }
+                } catch (handlerError) {
+                    console.error('Error in accordion handler:', handlerError);
+                    // Fallback to preserve basic accordion functionality even if tracking fails
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    if (content) {
+                        content.style.maxHeight = content.style.maxHeight ? null : content.scrollHeight + "px";
+                    }
+                }
+            };
+            
+            // First, remove any existing click listeners
+            // Note: This is a best effort as we can't easily remove anonymous functions
+            const oldElement = button.cloneNode(true);
+            if (button.parentNode) {
+                button.parentNode.replaceChild(oldElement, button);
+            }
+            
+            // Now attach our combined handler to the fresh element
+            oldElement.addEventListener('click', combinedHandler);
+            oldElement._trackingHandlerAttached = true;
+        });
+        
+        console.log('Accordion tracking integrated successfully');
+    } catch (error) {
+        console.error('Error setting up accordion tracking:', error);
+    }
+}
+
+/**
+ * Track useful resources link clicks
+ */
 function trackUsefulLinks() {
-    const usefulLinks = document.querySelectorAll('.useful-links a');
-    
-    usefulLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            // Get link category
-            let category = 'unknown';
-            if (this.closest('.au-links')) category = 'Australia';
-            else if (this.closest('.us-links')) category = 'US';
-            else if (this.closest('.gb-links')) category = 'UK';
+    try {
+        const usefulLinks = document.querySelectorAll('.useful-links a');
+        
+        if (usefulLinks.length === 0) {
+            console.warn('No useful links found for tracking');
+            return;
+        }
+        
+        console.log(`Found ${usefulLinks.length} useful links to track`);
+        
+        usefulLinks.forEach(link => {
+            // Skip if we've already attached our handler
+            if (link._trackingHandlerAttached) {
+                return;
+            }
             
-            // Track link click
-            mixpanel.track('Resource Link Clicked', {
-                'link_text': this.textContent.trim(),
-                'link_url': this.href,
-                'link_category': category,
-                'region': document.getElementById('language').value
+            link.addEventListener('click', function(e) {
+                try {
+                    // Get link category
+                    let category = 'unknown';
+                    if (this.closest('.au-links')) category = 'Australia';
+                    else if (this.closest('.us-links')) category = 'US';
+                    else if (this.closest('.gb-links')) category = 'UK';
+                    
+                    // Track link click
+                    mixpanel.track('Resource Link Clicked', {
+                        'link_text': this.textContent.trim(),
+                        'link_url': this.href,
+                        'link_category': category,
+                        'region': document.getElementById('language')?.value || 'unknown',
+                        'timestamp': new Date().toISOString()
+                    });
+                    
+                    console.log(`Tracked click on resource link: "${this.textContent.trim()}"`);
+                } catch (error) {
+                    console.error('Error tracking resource link click:', error);
+                }
             });
+            
+            link._trackingHandlerAttached = true;
         });
-    });
+        
+        console.log('Resource link tracking set up successfully');
+    } catch (error) {
+        console.error('Error setting up resource link tracking:', error);
+    }
 }
 
-// Track region changes
+/**
+ * Track region changes
+ */
 function trackRegionChanges() {
-    const regionSelector = document.getElementById('language');
-    
-    if (regionSelector) {
+    try {
+        const regionSelector = document.getElementById('language');
+        
+        if (!regionSelector) {
+            console.warn('Region selector not found for tracking');
+            return;
+        }
+        
+        // Skip if we've already attached our handler
+        if (regionSelector._trackingHandlerAttached) {
+            return;
+        }
+        
         // Store initial region value
         const initialRegion = regionSelector.value;
         
         regionSelector.addEventListener('change', function() {
-            const newRegion = this.value;
-            
-            // Track region change
-            mixpanel.track('Region Changed', {
-                'previous_region': initialRegion,
-                'new_region': newRegion
-            });
+            try {
+                const newRegion = this.value;
+                
+                // Track region change
+                mixpanel.track('Region Changed', {
+                    'previous_region': initialRegion,
+                    'new_region': newRegion,
+                    'timestamp': new Date().toISOString()
+                });
+                
+                console.log(`Tracked region change from "${initialRegion}" to "${newRegion}"`);
+                
+                // Re-initialize accordion tracking after language change
+                // This ensures any newly visible accordions get proper tracking
+                setTimeout(() => {
+                    integrateAccordionTracking();
+                }, 100);
+            } catch (error) {
+                console.error('Error tracking region change:', error);
+            }
         });
+        
+        regionSelector._trackingHandlerAttached = true;
+        console.log('Region change tracking set up successfully');
+    } catch (error) {
+        console.error('Error setting up region change tracking:', error);
     }
 }
 
-// Track contact CTA clicks
+/**
+ * Track contact CTA clicks
+ */
 function trackContactCTA() {
-    const contactLink = document.getElementById('feedback-email-link');
-    
-    if (contactLink) {
+    try {
+        const contactLink = document.getElementById('feedback-email-link');
+        
+        if (!contactLink) {
+            console.warn('Contact CTA not found for tracking');
+            return;
+        }
+        
+        // Skip if we've already attached our handler
+        if (contactLink._trackingHandlerAttached) {
+            return;
+        }
+        
         contactLink.addEventListener('click', function(e) {
-            // Track contact button click
-            mixpanel.track('Contact CTA Clicked', {
-                'location': 'footer',
-                'region': document.getElementById('language').value
-            });
+            try {
+                // Track contact button click
+                mixpanel.track('Contact CTA Clicked', {
+                    'location': 'footer',
+                    'region': document.getElementById('language')?.value || 'unknown',
+                    'timestamp': new Date().toISOString()
+                });
+                
+                console.log('Tracked contact CTA click');
+            } catch (error) {
+                console.error('Error tracking contact CTA click:', error);
+            }
         });
+        
+        contactLink._trackingHandlerAttached = true;
+        console.log('Contact CTA tracking set up successfully');
+    } catch (error) {
+        console.error('Error setting up contact CTA tracking:', error);
     }
 }
 
-// Enhance existing changeLanguage function to track region changes
+/**
+ * Override the existing changeLanguage function to integrate tracking
+ */
+// Store reference to the original function if it exists
 const originalChangeLanguage = window.changeLanguage;
+
+// Replace with our enhanced version
 window.changeLanguage = function() {
-    // Get previous region before change
-    const previousRegion = document.getElementById('language').value;
-    
-    // Run original function
-    if (typeof originalChangeLanguage === 'function') {
-        originalChangeLanguage();
+    try {
+        // Get previous region before change
+        const languageSelector = document.getElementById('language');
+        const previousRegion = languageSelector ? languageSelector.value : 'unknown';
+        
+        console.log(`Language change initiated from "${previousRegion}"`);
+        
+        // Run original function
+        if (typeof originalChangeLanguage === 'function') {
+            originalChangeLanguage();
+        } else {
+            // Fallback to global function if not stored as property
+            if (typeof changeLanguage === 'function' && changeLanguage !== window.changeLanguage) {
+                changeLanguage();
+            } else {
+                console.warn('Original changeLanguage function not found');
+            }
+        }
+        
+        // Get new region after change
+        const newRegion = languageSelector ? languageSelector.value : 'unknown';
+        
+        // Track only if the region actually changed
+        if (previousRegion !== newRegion) {
+            mixpanel.track('Region Changed', {
+                'previous_region': previousRegion,
+                'new_region': newRegion,
+                'method': 'dropdown',
+                'timestamp': new Date().toISOString()
+            });
+            
+            console.log(`Tracked region change from "${previousRegion}" to "${newRegion}"`);
+        }
+        
+        // Re-initialize accordion tracking after language change
+        setTimeout(() => {
+            integrateAccordionTracking();
+        }, 100);
+    } catch (error) {
+        console.error('Error in enhanced changeLanguage:', error);
+        // Try to call original as fallback
+        if (typeof originalChangeLanguage === 'function') {
+            originalChangeLanguage();
+        }
     }
-    
-    // Get new region after change
-    const newRegion = document.getElementById('language').value;
-    
-    // Track only if the region actually changed
-    if (previousRegion !== newRegion) {
-        mixpanel.track('Region Changed', {
-            'previous_region': previousRegion,
-            'new_region': newRegion
-        });
-    }
-};    
+};
+
+/**
+ * Debug utility: Log all Mixpanel events to console
+ * Uncomment for debugging
+ */
+/*
+if (typeof mixpanel !== 'undefined') {
+    const originalTrack = mixpanel.track;
+    mixpanel.track = function(eventName, properties) {
+        console.log('Mixpanel Event:', eventName, properties);
+        return originalTrack.apply(this, arguments);
+    };
+}
+*/
 </script>
 
 </body>
