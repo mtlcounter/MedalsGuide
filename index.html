@@ -323,12 +323,32 @@ document.addEventListener('DOMContentLoaded', function() {
   function changeLanguage() {
     // Your existing language change code
     
-    // After updating visibility of FAQ items, reset accordion states
-    const visibleAccordions = document.querySelectorAll('.faq-item[style*="display: block"] .accordion-button');
-    visibleAccordions.forEach(button => {
+    // After updating visibility of FAQ items, reset ALL accordion states
+    // This improves the previous behavior by ensuring both common and 
+    // region-specific FAQs are properly reset when changing languages
+    
+    // Reset common FAQs
+    const commonAccordions = document.querySelectorAll('.faq-item.common-faq .accordion-button');
+    commonAccordions.forEach(button => {
       button.classList.remove('active');
       const content = button.nextElementSibling;
-      content.style.maxHeight = null;
+      if (content) content.style.maxHeight = null;
+    });
+    
+    // Reset region-specific FAQs
+    const regionAccordions = document.querySelectorAll('.faq-item.au-faq .accordion-button, .faq-item.us-faq .accordion-button, .faq-item.gb-faq .accordion-button');
+    regionAccordions.forEach(button => {
+      button.classList.remove('active');
+      const content = button.nextElementSibling;
+      if (content) content.style.maxHeight = null;
+    });
+    
+    // As a fallback, also reset any other visible accordions that might not be covered by the above selectors
+    const otherVisibleAccordions = document.querySelectorAll('.faq-item:not(.common-faq):not(.au-faq):not(.us-faq):not(.gb-faq)[style*="display: block"] .accordion-button');
+    otherVisibleAccordions.forEach(button => {
+      button.classList.remove('active');
+      const content = button.nextElementSibling;
+      if (content) content.style.maxHeight = null;
     });
   }
 </script>
